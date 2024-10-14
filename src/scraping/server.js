@@ -33,7 +33,7 @@ app.get('/get-image', async (req, res) => {
   const { locator, selector, attribute } = pageDetails
 
   const browser = await chromium.launch({
-    headless: true
+    headless: false
   })
 
   const page = await browser.newPage()
@@ -56,7 +56,7 @@ app.get('/get-image', async (req, res) => {
   } catch {
     browser.close()
 
-    res.status(500).send({ error: 'Image not found' })
+    res.status(500).send({ error: 'Timeout: Image not found' })
     return
   }
 
