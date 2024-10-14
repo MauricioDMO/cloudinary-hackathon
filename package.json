@@ -2,27 +2,35 @@
   "name": "cloudinary-hackathon",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
-    "dev": "next dev",
+    "dev": "concurrently -n \"   next   , scrapper \" -c \"green,yellow\" \"next dev\" \"pnpm server:dev\"",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "server:dev": "node --watch ./src/scraping/server.js",
+    "server": "node src/scraping/server.js"
   },
   "dependencies": {
+    "express": "^4.21.1",
     "next": "14.2.15",
     "playwright": "^1.48.0",
     "react": "^18",
     "react-dom": "^18"
   },
   "devDependencies": {
-    "@types/node": "^20",
+    "concurrently": "^9.0.1",
+    "@types/express": "^5.0.0",
+    "@types/node": "^20.16.11",
     "@types/react": "^18",
     "@types/react-dom": "^18",
-    "eslint": "^8",
+    "eslint": "^8.57.1",
     "eslint-config-next": "14.2.15",
     "postcss": "^8",
+    "standard": "^17.1.2",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
   },
   "packageManager": "pnpm@9.11.0+sha512.0a203ffaed5a3f63242cd064c8fb5892366c103e328079318f78062f24ea8c9d50bc6a47aa3567cabefd824d170e78fa2745ed1f16b132e16436146b7688f19b"
 }
+
