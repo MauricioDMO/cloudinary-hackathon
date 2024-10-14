@@ -1,74 +1,48 @@
-import { chromium } from "playwright";
-
+import { scraperUrl } from '@/consts'
 
 export async function GET (request: Request) {
-  const params = new URL(request.url).searchParams;
-  let url
-  
-  try {
-    const rawUrl = params.get("url");
-    if (!rawUrl) throw new Error("No URL provided")
-    url = new URL(rawUrl).href;
-  } catch (error) {
-    const err = error as Error;
-    return Response.json(
-      { 
-        error: "Invalid URL",
-        errorDetails: err.message
-       },
-      { status: 400 }
-    )
-  }
-  
+  const rawUrl = new URL(request.url)
+    .searchParams.get('url')
+  const response = await fetch(`${scraperUrl}/get-image?url=${rawUrl}`)
 
-  const urlPattern = /^(?:https?:\/\/)?(?:www\.)?([^\/:]+)/;
-  const match = url.match(urlPattern);
-  const domain = match ? match[1].split(".")[0] : null;
-
-  const patternsForSite: { [key: string]: RegExp } = {
-    // get post id from url
-    "instagram": /instagram\.com\/p\/([^\/?]+)/,
-  }
-
-  if (!domain || !patternsForSite[domain]) {
-    return Response.json(
-      { error: "Unsupported domain" },
-      { status: 400 }
+  if (!response.ok) {
+    return new Response(
+      JSON.stringify({
+        error: response.statusText
+      }),
+      {
+        status: response.status,
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
     )
   }
 
-  const browser = await chromium.launch({
-    headless: true
-  });
+  const imageInfo = await response.json()
 
-  const page = await browser.newPage();
-  await page.goto(url);
-  await page.waitForSelector("._aagv");
-
-  const image = await page.$$eval(
-    "._aagv img",
-    (elements: HTMLImageElement[]) => (
-      elements[0].getAttribute("src")
-    )
-  )
-
-  browser.close();
-
-  const res = await fetch(image as string);
-
+  const res = await fetch(imageInfo.imageUrl)
   if (!res.ok) {
-    return Response.json(
-      { error: "Failed to fetch image" },
-      { status: 500 }
+    return new Response(
+      JSON.stringify({
+        error: res.statusText
+      }),
+      {
+        status: res.status,
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
     )
   }
 
-  console.log(res)
-  const imageBlob = await res.blob();
+  const image = await res.blob()
 
-  return new Response(imageBlob, {
+  return new Response(image, {
     headers: {
-      "Content-Type": res.headers.get("Content-Type") || "image/jpeg"
+      'Content-Type': response.headers.get('Content-Type') || 'image/jpeg',
+      '-image-url': imageInfo.imageUrl,
+      '-image-domain-name': imageInfo.domainName
     }
   })
 }
