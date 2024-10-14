@@ -40,6 +40,7 @@ app.get('/get-image', async (req, res) => {
 
   await page.goto(url)
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   page.on('console', msg => {
     // TODO: Manage 401 error
     // if (msg.type() === 'error')
