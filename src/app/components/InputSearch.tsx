@@ -1,11 +1,11 @@
-"use client"
+'use client'
 
-import { useState } from "react";
+import { useState } from 'react'
 
-export default function InputSearch() {
-  const [search, setSearch] = useState<string>("");
-  const [loading, setLoading] = useState<boolean>(false);
-  const [image, setImage] = useState<string | null>(null);
+export default function InputSearch () {
+  const [search, setSearch] = useState<string>('')
+  const [loading, setLoading] = useState<boolean>(false)
+  const [image, setImage] = useState<string | null>(null)
 
   const handleSearch = async () => {
     setLoading(true)
@@ -25,10 +25,13 @@ export default function InputSearch() {
         loading ? <div>Loading...</div> : null
       }
       {
-        image ? <img
+        image
+          // eslint-disable-next-line @next/next/no-img-element
+          ? <img
           className="mx-auto max-w-md"
           src={image}
-          alt="search result" /> : null
+          alt="search result" />
+          : null
       }
     </>
   )
